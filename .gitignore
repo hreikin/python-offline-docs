@@ -140,5 +140,5 @@ cython_debug/
 # Created files
 *.data
 
-# Images folder
-images/
+# src folder
+src/
