@@ -20,6 +20,7 @@ itemloaders==1.0.4
 jmespath==0.10.0
 Kivy==2.0.0
 Kivy-Garden==0.1.4
+kivymd==0.104.2
 lxml==4.7.1
 markdownify==0.10.1
 parsel==1.6.0
