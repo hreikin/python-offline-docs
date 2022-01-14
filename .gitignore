@@ -144,3 +144,5 @@ cython_debug/
 src/
 src-backup/
 converted/
+test-converted/
+test-src/
