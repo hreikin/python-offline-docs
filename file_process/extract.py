@@ -1,11 +1,17 @@
-from genericpath import exists
 from pathlib import Path
 import zipfile, os
 import markdownify
 from bs4 import BeautifulSoup
 
-zipfiles_path = "/home/hreikin/git/python-offline-docs/file_download/output/downloads/full"
+zipped_source = "/home/hreikin/git/python-offline-docs/file_download/output/downloads/full"
 unzipped_source = "/home/hreikin/git/python-offline-docs/file_process/output/src/"
+
+def unzip_source(source_path, output_path):
+    os.chdir(source_path)
+    for file in os.listdir(source_path):
+        if zipfile.is_zipfile(file):
+            with zipfile.ZipFile(file) as item:
+                item.extractall(output_path)
 
 def convert_to_markdown(unzipped_source):
     for root, dirnames, filenames in os.walk(unzipped_source):
@@ -22,12 +28,6 @@ def convert_to_markdown(unzipped_source):
                 with open(Path(mdname, exist_ok=True), "w") as stream:
                     stream.write(body_markdown)
 
-def unzip_source(source_path, output_path):
-    os.chdir(source_path)
-    for file in os.listdir(source_path):
-        if zipfile.is_zipfile(file):
-            with zipfile.ZipFile(file) as item:
-                item.extractall(output_path)
 
-# unzip_source(zipfiles_path, unzipped_source)
+# unzip_source(zipped_source, unzipped_source)
 convert_to_markdown(unzipped_source)
