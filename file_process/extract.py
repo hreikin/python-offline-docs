@@ -1,6 +1,5 @@
 from pathlib import Path
 import zipfile, os, shutil
-# import markdownify
 import pypandoc
 from bs4 import BeautifulSoup
 
@@ -23,19 +22,7 @@ def convert_to_rst(unzipped_source):
             if filename.endswith('.html'):
                 fname = os.path.join(root, filename)
                 rstname = root + "/" + filename.replace(".html", ".rst")
-                print(f'Opening HTML File: {fname}')
-                with open(fname) as handle:
-                    soup = BeautifulSoup(handle.read(), 'html.parser')
-                    convert_links(soup)
-                    body_html = str(soup.find("div", class_="body"))
-                    # body_markdown = markdownify.markdownify(body_html)
-                print(f'Creating reStructuredText File: {rstname}')
-                output = pypandoc.convert_file(fname, "rst", outputfile=rstname)
-                assert output == ""
-
-
-                # with open(Path(mdname, exist_ok=True), "w") as stream:
-                #     stream.write(body_markdown)
+                create_soup(fname, rstname)
 
 def copy_rst(source_path, target_path):
     src = Path(source_path, exist_ok=True)
@@ -51,12 +38,20 @@ def copy_rst(source_path, target_path):
                 print(fpath)
                 print(trg_path)
 
-def convert_links(soup = BeautifulSoup()):
-    links = soup.find('a')
-    print(links)
-    return soup
-
+def create_soup(fname, rstname):
+    print(f'Opening HTML File: {fname}')
+    with open(fname) as handle:
+        soup = BeautifulSoup(handle.read(), 'html.parser')
+        body_html = soup.find("div", class_="body", role="main")
+        print(body_html)
+    print(f'Creating reStructuredText File: {rstname}')
+    output = pypandoc.convert_text(body_html, "rst", format="html", outputfile=rstname)
+    assert output == ""
+    
 
 # unzip_source(zipped_source, unzipped_source)
-convert_to_rst(test_unzipped_source)
-copy_rst(test_unzipped_source, test_markdown_path)
+# convert_to_rst(test_unzipped_source)
+# copy_rst(test_unzipped_source, test_markdown_path)
+rstname = "/home/hreikin/git/python-offline-docs/file_process/output/test-converted/python-3.10.1-docs-html/about.rst"
+fname="/home/hreikin/git/python-offline-docs/file_process/output/test-src/python-3.10.1-docs-html/about.html"
+create_soup(fname, rstname)
