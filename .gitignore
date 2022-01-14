@@ -140,9 +140,10 @@ cython_debug/
 # Created files
 *.data
 
-# src folder
+# local folders
 src/
 src-backup/
 converted/
 test-converted/
 test-src/
+.vscode/
