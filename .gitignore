@@ -146,4 +146,6 @@ src-backup/
 converted/
 test-converted/
 test-src/
-.vscode/
+.vscode
+single-src/
+single-converted/
