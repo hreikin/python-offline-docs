@@ -43,7 +43,6 @@ def create_soup(fname, rstname):
     with open(fname) as handle:
         soup = BeautifulSoup(handle, "html.parser")
     body_html = soup.find("div", class_="body", role="main")
-    log_file = "./error.log"
     for a in body_html.find_all("a", class_="reference internal"):
         a['href'] = a['href'].replace(".html", ".rst")
     print(f'Creating reStructuredText File: {rstname}')
