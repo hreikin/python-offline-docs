@@ -2,7 +2,6 @@ from pathlib import Path
 import zipfile, os, shutil
 import pypandoc
 from bs4 import BeautifulSoup
-import re
 
 zipped_source = "/home/hreikin/git/python-offline-docs/file_download/output/downloads/full"
 unzipped_source = "/home/hreikin/git/python-offline-docs/file_process/output/src/"
@@ -43,27 +42,13 @@ def create_soup(fname, rstname):
     print(f'Opening HTML File: {fname}')
     with open(fname) as handle:
         soup = BeautifulSoup(handle, "html.parser")
-
     body_html = soup.find("div", class_="body", role="main")
-    tags = body_html.find_all("a", class_="reference internal")
     log_file = "./error.log"
-    try:
-        for item in tags:
-            old_item = str(item)
-            new_item = re.sub(".html", ".rst", str(item))
-            body_html = re.sub(old_item, new_item, str(body_html))
-    except:
-        message = "EXCEPTION: Tag Loop"
-        with open(log_file, "a") as handle:
-            handle.write(message + "\n" + fname + "\n")
-    try:
-        print(f'Creating reStructuredText File: {rstname}')
-        output = pypandoc.convert_text(body_html, "rst", format="html", outputfile=rstname)
-        assert output == ""
-    except:
-        message = "EXCEPTION: Convert with pypandoc"
-        with open(log_file, "a") as handle:
-            handle.write(message + "\n" + fname + "\n")
+    for a in body_html.find_all("a", class_="reference internal"):
+        a['href'] = a['href'].replace(".html", ".rst")
+    print(f'Creating reStructuredText File: {rstname}')
+    output = pypandoc.convert_text(body_html, "rst", format="html", outputfile=rstname)
+    assert output == ""
 
 # unzip_source(zipped_source, unzipped_source)
 convert_to_rst(test_unzipped_source)
