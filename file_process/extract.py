@@ -2,6 +2,7 @@ from pathlib import Path
 import zipfile, os, shutil
 import pypandoc
 from bs4 import BeautifulSoup
+import re
 
 zipped_source = "/home/hreikin/git/python-offline-docs/file_download/output/downloads/full"
 unzipped_source = "/home/hreikin/git/python-offline-docs/file_process/output/src/"
@@ -41,17 +42,32 @@ def copy_rst(source_path, target_path):
 def create_soup(fname, rstname):
     print(f'Opening HTML File: {fname}')
     with open(fname) as handle:
-        soup = BeautifulSoup(handle.read(), 'html.parser')
-        body_html = soup.find("div", class_="body", role="main")
-        print(body_html)
-    print(f'Creating reStructuredText File: {rstname}')
-    output = pypandoc.convert_text(body_html, "rst", format="html", outputfile=rstname)
-    assert output == ""
-    
+        soup = BeautifulSoup(handle, "html.parser")
+
+    body_html = soup.find("div", class_="body", role="main")
+    tags = body_html.find_all("a", class_="reference internal")
+    log_file = "./error.log"
+    try:
+        for item in tags:
+            old_item = str(item)
+            new_item = re.sub(".html", ".rst", str(item))
+            body_html = re.sub(old_item, new_item, str(body_html))
+    except:
+        message = "EXCEPTION: Tag Loop"
+        with open(log_file, "a") as handle:
+            handle.write(message + "\n" + fname + "\n")
+    try:
+        print(f'Creating reStructuredText File: {rstname}')
+        output = pypandoc.convert_text(body_html, "rst", format="html", outputfile=rstname)
+        assert output == ""
+    except:
+        message = "EXCEPTION: Convert with pypandoc"
+        with open(log_file, "a") as handle:
+            handle.write(message + "\n" + fname + "\n")
 
 # unzip_source(zipped_source, unzipped_source)
-# convert_to_rst(test_unzipped_source)
-# copy_rst(test_unzipped_source, test_markdown_path)
-rstname = "/home/hreikin/git/python-offline-docs/file_process/output/test-converted/python-3.10.1-docs-html/about.rst"
-fname="/home/hreikin/git/python-offline-docs/file_process/output/test-src/python-3.10.1-docs-html/about.html"
-create_soup(fname, rstname)
+convert_to_rst(test_unzipped_source)
+copy_rst(test_unzipped_source, test_markdown_path)
+# rstname = "/home/hreikin/git/python-offline-docs/file_process/output/single-converted/python-3.10.1-docs-html/about.rst"
+# fname="/home/hreikin/git/python-offline-docs/file_process/output/single-src/python-3.10.1-docs-html/about.html"
+# create_soup(fname, rstname)
