@@ -23,6 +23,7 @@ def convert_to_rst(unzipped_source):
                 fname = os.path.join(root, filename)
                 rstname = root + "/" + filename.replace(".html", ".rst")
                 create_soup(fname, rstname)
+                process_rst(rstname)
 
 def copy_rst(source_path, target_path):
     src = Path(source_path, exist_ok=True)
@@ -48,6 +49,29 @@ def create_soup(fname, rstname):
     print(f'Creating reStructuredText File: {rstname}')
     output = pypandoc.convert_text(body_html, "rst", format="html", outputfile=rstname)
     assert output == ""
+
+def process_rst(rstname):
+    nothing = ""
+    replace_list = [
+        ("–","-"),
+        ("\ `¶", " `¶"),
+        (".. container:: body", nothing),
+        (".. container:: clearer", nothing),
+        (".. container:: section", nothing),
+        (".. container::", nothing),
+        (".. rubric::", nothing),
+        (".. admonition::", nothing),
+    ]
+    with open(rstname, "r") as input:
+        with open("./temp.rst", "w") as output:
+            for line in input:
+                for old, new in replace_list:
+                    line = line.replace(old, new)
+                if ":name:" not in line:
+                    # line = line.replace("\ `¶", " `¶")
+                    # line = line.replace("\ `¶", " `¶").lstrip("   ")
+                    output.write(line)
+    os.replace("./temp.rst", rstname)
 
 # unzip_source(zipped_source, unzipped_source)
 convert_to_rst(test_unzipped_source)
