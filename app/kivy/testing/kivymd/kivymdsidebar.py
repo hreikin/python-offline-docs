@@ -6,8 +6,7 @@ from kivymd.theming import ThemableBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.list import OneLineIconListItem, MDList
 
-KV = './pythondocs.kv'
-
+KV = './kivymdsidebar.kv'
 
 class ContentNavigationDrawer(MDBoxLayout):
     pass
@@ -30,9 +29,9 @@ class DrawerList(ThemableBehavior, MDList):
         instance_item.text_color = self.theme_cls.primary_color
 
 
-class PythonDocs(MDApp):
-    # def build(self):
-    #     return Builder.load_string(KV)
+class KivymdSidebar(MDApp):
+    def build(self):
+        return # Builder.load_string(KV)
 
     def on_start(self):
         icons_item = {
@@ -49,4 +48,5 @@ class PythonDocs(MDApp):
             )
 
 
-PythonDocs().run()
+
+KivymdSidebar().run()
