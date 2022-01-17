@@ -3,11 +3,11 @@ import zipfile, os, shutil
 import pypandoc
 from bs4 import BeautifulSoup
 
-zipped_source = "/home/hreikin/git/python-offline-docs/file_download/output/downloads/full"
-unzipped_source = "/home/hreikin/git/python-offline-docs/file_process/output/src/"
-markdown_path = "/home/hreikin/git/python-offline-docs/file_process/output/converted/"
-test_unzipped_source = "/home/hreikin/git/python-offline-docs/file_process/output/test-src/"
-test_markdown_path = "/home/hreikin/git/python-offline-docs/file_process/output/test-converted/"
+zipped_source = "/home/hreikin/git/python-offline-docs/download/output/downloads/full"
+unzipped_source = "/home/hreikin/git/python-offline-docs/process/output/src/"
+markdown_path = "/home/hreikin/git/python-offline-docs/process/output/converted/"
+test_unzipped_source = "/home/hreikin/git/python-offline-docs/process/output/test-src/"
+test_markdown_path = "/home/hreikin/git/python-offline-docs/process/output/test-converted/"
 
 def unzip_source(source_path, output_path):
     os.chdir(source_path)
@@ -76,6 +76,6 @@ def process_rst(rstname):
 # unzip_source(zipped_source, unzipped_source)
 convert_to_rst(test_unzipped_source)
 copy_rst(test_unzipped_source, test_markdown_path)
-# rstname = "/home/hreikin/git/python-offline-docs/file_process/output/single-converted/python-3.10.1-docs-html/about.rst"
-# fname="/home/hreikin/git/python-offline-docs/file_process/output/single-src/python-3.10.1-docs-html/about.html"
+# rstname = "/home/hreikin/git/python-offline-docs/process/output/single-converted/python-3.10.1-docs-html/about.rst"
+# fname="/home/hreikin/git/python-offline-docs/process/output/single-src/python-3.10.1-docs-html/about.html"
 # create_soup(fname, rstname)
