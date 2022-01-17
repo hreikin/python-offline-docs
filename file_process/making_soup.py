@@ -8,7 +8,7 @@ zipped_source = "/home/hreikin/git/python-offline-docs/file_download/output/down
 unzipped_source = "/home/hreikin/git/python-offline-docs/file_process/output/src/"
 markdown_path = "/home/hreikin/git/python-offline-docs/file_process/output/converted/"
 test_unzipped_source = "/home/hreikin/git/python-offline-docs/file_process/output/test-src/"
-test_markdown_path = "/home/hreikin/git/python-offline-docs/file_process/output/test-converted/"
+test_output_path = "/home/hreikin/git/python-offline-docs/file_process/output/test-output/"
 
 def unzip_source(source_path, output_path):
     """Unzips all source files into the output path."""
@@ -26,11 +26,11 @@ def prepare_soup(source_path):
         for filename in filenames:
             if filename.endswith('.html'):
                 source_file = os.path.join(root, filename)
-                output_file = root + "/" + filename.replace(".html", "-MERGED-FILE.html")
-                create_soup(source_file, output_file)
+                # output_file = root + "/" + filename.replace(".html", "-MERGED-FILE.html")
+                create_soup(source_file)
 
 
-def create_soup(source_file, output_file):
+def create_soup(source_file):
     """Opens the source_file and targets HTML elements to create separate 
     variables for each item which are used to create the final merged file."""
     print(f'Opening HTML File: {source_file}')
@@ -38,7 +38,31 @@ def create_soup(source_file, output_file):
         soup = BeautifulSoup(handle, "html.parser")
     head_soup = soup.find("head")
     body_soup = soup.find("body")
-    footer_soup = soup.find("footer")
+    footer_soup = soup.find("div", class_="footer")
+    partial_pages = [
+        ("-HEAD-PARTIAL.html", head_soup), 
+        ("-BODY-PARTIAL.html", body_soup), 
+        ("-FOOTER-PARTIAL.html", footer_soup)
+        ]
+
+    for file_extension, soup in partial_pages:
+        # Constructs partial output file names.
+        output_file = str(source_file).replace(".html", f"{file_extension}")
+        print(f'Creating Merged HTML File: {output_file}')
+
+        # Creates a file from a soup object.
+        output = pypandoc.convert_text(soup, "html", format="html", outputfile=output_file)
+        assert output == ""
+
+
+
+
+    # print(head_soup)
+    # print(body_soup)
+    # print(footer_soup)
+
+
+
 
     # Changes all internal link file extensions from html to rst.
     # for a in body_html.find_all("a", class_="reference internal"):
@@ -48,8 +72,6 @@ def create_soup(source_file, output_file):
     # print(f'Creating Merged HTML File: {output_file}')
     # output = pypandoc.convert_text(body_html, "html", format="html", outputfile=output_file)
     # assert output == ""
-
-
 
 def copy_final_file(source_path, output_path):
     """Copies all files that end with '.html' from one location to another. 
@@ -66,3 +88,5 @@ def copy_final_file(source_path, output_path):
                 shutil.copyfile(fpath, trg_path)
                 print(fpath)
                 print(trg_path)
+
+prepare_soup(test_unzipped_source)
