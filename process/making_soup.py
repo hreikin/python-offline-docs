@@ -20,6 +20,8 @@ def copy_to_location(source_path, destination_path, override=False):
     :param override if True all files will be overritten, otherwise if false skip file
     :return: count of copied files
     """
+    source_path = os.path.realpath(source_path)
+    destination_path = os.path.realpath(destination_path)
     files_count = 0
     if not os.path.exists(destination_path):
         os.mkdir(destination_path)
@@ -39,6 +41,7 @@ def prepare_soup(source_path):
     """Walks through the source path and finds all HTML files, creates a merged 
     file name for each one found before calling create_soup() to open/create the 
     files."""
+    source_path = os.path.realpath(source_path)
     for root, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
             if filename.endswith('.html'):
@@ -50,6 +53,7 @@ def prepare_soup(source_path):
 def create_soup(source_file):
     """Opens the source_file and targets HTML elements to create separate 
     variables for each item which are used to create the final merged file."""
+    source_file = os.path.realpath(source_file)
     print(f'Opening HTML File: {source_file}')
     with open(source_file) as handle:
         soup = BeautifulSoup(handle, "html.parser")
@@ -108,8 +112,8 @@ def create_soup(source_file):
     # Use pypandoc to insert the partials into a template file.
     head_partial = str(source_file).replace("-ORIGINAL.html", "-HEAD-PARTIAL.html")
     body_partial = str(source_file).replace("-ORIGINAL.html", "-BODY-PARTIAL.html")
-    template_file = "./templates/app/index.html"
-    template_css = "./templates/app/styles.css"
+    template_file = os.path.realpath("templates/index.html")
+    template_css = os.path.realpath("templates/styles.css")
     finished_file = str(source_file).replace("-ORIGINAL.html", ".html")
     pandoc_args = [
         "-s",
@@ -135,17 +139,17 @@ def move_to_location(source_path, output_path):
 
 
 
-zip_paths = "../download/output/downloads/full/"
-zip_output = "output/src/"
-unzip_source(zip_paths, zip_output)
+# zip_paths = "../download/output/downloads/full/"
+# zip_output = "output/src/"
+# unzip_source(zip_paths, zip_output)
 
-# source_path = "/process/output/test-src/"
-# output_path = "/process/output/app/"
-# print("Copying Source.")
-# copy_to_location(source_path, output_path)
+source_path = "output/test-src/"
+output_path = "output/app/"
+print("Copying Source.")
+copy_to_location(source_path, output_path)
 
-# print("Preparing Soup.")
-# prepare_soup(output_path)
+print("Preparing Soup.")
+prepare_soup(output_path)
 
 # template_source_path = "/templates/"
 # template_output_path = "/process/output/app/"
