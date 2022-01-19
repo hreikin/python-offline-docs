@@ -125,6 +125,7 @@ def create_soup(source_file):
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
 def clean_up(source_path):
+    source_path = os.path.realpath(source_path)
     remove = ["-PARTIAL.html", "-ORIGINAL.html"]
     for root, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
@@ -151,14 +152,14 @@ copy_to_location(source_path, output_path)
 print("Preparing Soup.")
 prepare_soup(output_path)
 
-# template_source_path = "/templates/"
-# template_output_path = "/process/output/app/"
-# print("Copying Template.")
-# copy_to_location(template_source_path, template_output_path)
+template_source_path = "templates/"
+template_output_path = "output/app/"
+print("Copying Template.")
+copy_to_location(template_source_path, template_output_path)
 
-# print("Cleaning Up.")
-# clean_up(output_path)
+print("Cleaning Up.")
+clean_up(output_path)
 
-# final_path = "/app/pod/"
-# print("Moving To Final Location.")
-# move_to_location(output_path, final_path)
+final_path = "../app/pod/"
+print("Moving To Final Location.")
+move_to_location(output_path, final_path)
