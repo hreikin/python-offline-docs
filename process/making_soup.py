@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 
 def unzip_source(source_path, output_path):
     """Unzips all source files into the output path."""
-    source_path = os.path.join(ROOT_DIR + source_path)
-    output_path = os.path.join(ROOT_DIR + output_path)
+    source_path = os.path.realpath(source_path)
+    output_path = os.path.realpath(output_path)
     os.chdir(source_path)
     for file in os.listdir(source_path):
         if zipfile.is_zipfile(file):
@@ -133,31 +133,28 @@ def move_to_location(source_path, output_path):
     for file in os.listdir(source_path):
         shutil.move(source_path + file, output_path + file)
 
-ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
-print(ROOT_DIR)
 
-# Works
-# 
-# zip_paths = "/download/output/downloads/full/"
-# zip_output = "/process/output/src/"
-# unzip_source(zip_paths, zip_output)
 
-source_path = "/process/output/test-src/"
-output_path = "/process/output/app/"
-print("Copying Source.")
-copy_to_location(source_path, output_path)
+zip_paths = "../download/output/downloads/full/"
+zip_output = "output/src/"
+unzip_source(zip_paths, zip_output)
 
-print("Preparing Soup.")
-prepare_soup(output_path)
+# source_path = "/process/output/test-src/"
+# output_path = "/process/output/app/"
+# print("Copying Source.")
+# copy_to_location(source_path, output_path)
 
-template_source_path = "/templates/"
-template_output_path = "/process/output/app/"
-print("Copying Template.")
-copy_to_location(template_source_path, template_output_path)
+# print("Preparing Soup.")
+# prepare_soup(output_path)
 
-print("Cleaning Up.")
-clean_up(output_path)
+# template_source_path = "/templates/"
+# template_output_path = "/process/output/app/"
+# print("Copying Template.")
+# copy_to_location(template_source_path, template_output_path)
 
-final_path = "/app/pod/"
-print("Moving To Final Location.")
-move_to_location(output_path, final_path)
+# print("Cleaning Up.")
+# clean_up(output_path)
+
+# final_path = "/app/pod/"
+# print("Moving To Final Location.")
+# move_to_location(output_path, final_path)
