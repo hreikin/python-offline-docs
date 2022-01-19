@@ -1,22 +1,39 @@
-from pathlib import Path
-import zipfile, os, shutil
+import zipfile, glob, os, shutil
 import pypandoc
 from bs4 import BeautifulSoup
 
-
-zipped_source = "/home/hreikin/git/python-offline-docs/download/output/downloads/full"
-unzipped_source = "/home/hreikin/git/python-offline-docs/process/output/src/"
-markdown_path = "/home/hreikin/git/python-offline-docs/process/output/converted/"
-test_unzipped_source = "/home/hreikin/git/python-offline-docs/process/output/test-src/"
-test_output_path = "/home/hreikin/git/python-offline-docs/process/output/test-output/"
-
 def unzip_source(source_path, output_path):
     """Unzips all source files into the output path."""
+    source_path = os.path.join(ROOT_DIR + source_path)
+    output_path = os.path.join(ROOT_DIR + output_path)
     os.chdir(source_path)
     for file in os.listdir(source_path):
         if zipfile.is_zipfile(file):
             with zipfile.ZipFile(file) as item:
                 item.extractall(output_path)
+
+def copy_to_location(source_path, destination_path, override=False):
+    """
+    Recursive copies files from source  to destination directory.
+    :param source_path: source directory
+    :param destination_path: destination directory
+    :param override if True all files will be overritten, otherwise if false skip file
+    :return: count of copied files
+    """
+    files_count = 0
+    if not os.path.exists(destination_path):
+        os.mkdir(destination_path)
+    items = glob.glob(source_path + '/*')
+    for item in items:
+        if os.path.isdir(item):
+            path = os.path.join(destination_path, item.split('/')[-1])
+            files_count += copy_to_location(source_path=item, destination_path=path, override=override)
+        else:
+            file = os.path.join(destination_path, item.split('/')[-1])
+            if not os.path.exists(file) or override:
+                shutil.copyfile(item, file)
+                files_count += 1
+    return files_count
 
 def prepare_soup(source_path):
     """Walks through the source path and finds all HTML files, creates a merged 
@@ -25,10 +42,10 @@ def prepare_soup(source_path):
     for root, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
             if filename.endswith('.html'):
-                source_file = os.path.join(root, filename)
-                # output_file = root + "/" + filename.replace(".html", "-MERGED-FILE.html")
-                create_soup(source_file)
-
+                original_file = os.path.join(root, filename)
+                copied_file = root + "/" + filename.replace(".html", "-ORIGINAL.html")
+                shutil.move(original_file, copied_file)
+                create_soup(copied_file)
 
 def create_soup(source_file):
     """Opens the source_file and targets HTML elements to create separate 
@@ -82,39 +99,65 @@ def create_soup(source_file):
     # Creates the partials from the finished soup.
     for file_extension, soup in partial_pages:
         # Constructs partial output file names.
-        output_file = str(source_file).replace(".html", f"{file_extension}")
+        output_file = str(source_file).replace("-ORIGINAL.html", f"{file_extension}")
         print(f'Creating Merged HTML File: {output_file}')
         with open(output_file, "w") as stream:
             for item in soup:
                 stream.write(item)
 
     # Use pypandoc to insert the partials into a template file.
-    head_partial = str(source_file).replace(".html", "-HEAD-PARTIAL.html")
-    body_partial = str(source_file).replace(".html", "-BODY-PARTIAL.html")
-    template_file = "/home/hreikin/git/python-offline-docs/process/templates/index.html"
-    finished_file = str(source_file).replace(".html", "-FINAL.html")
+    head_partial = str(source_file).replace("-ORIGINAL.html", "-HEAD-PARTIAL.html")
+    body_partial = str(source_file).replace("-ORIGINAL.html", "-BODY-PARTIAL.html")
+    template_file = "./templates/app/index.html"
+    template_css = "./templates/app/styles.css"
+    finished_file = str(source_file).replace("-ORIGINAL.html", ".html")
     pandoc_args = [
         "-s",
+        f"--css={template_css}",
         f"--include-in-header={head_partial}",
         f"--include-before-body={body_partial}",
         f"--template={template_file}",
     ]
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
-def copy_final_file(source_path, output_path):
-    """Copies all files that end with '.html' from one location to another. 
-    Needs improving."""
-    src = Path(source_path, exist_ok=True)
-    trg = Path(output_path, exist_ok=True)
-    for root, dirnames, filenames in os.walk(src):
+def clean_up(source_path):
+    remove = ["-PARTIAL.html", "-ORIGINAL.html"]
+    for root, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
-            if filename.endswith('.rst'):
-                fpath = os.path.join(root, filename)
-                dir_path = Path(fpath.replace("src", "converted").rstrip(filename), exist_ok=True)
-                Path.mkdir(dir_path, parents=True, exist_ok=True)
-                trg_path = Path(fpath.replace("src", "converted"), exist_ok=True)
-                shutil.copyfile(fpath, trg_path)
-                print(fpath)
-                print(trg_path)
+            for item in remove:
+                if filename.endswith(item):
+                    print(f"Removing: {root}/{filename}")
+                    os.remove(f"{root}/{filename}")
 
-prepare_soup(test_unzipped_source)
+def move_to_location(source_path, output_path):
+    for file in os.listdir(source_path):
+        shutil.move(source_path + file, output_path + file)
+
+ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+print(ROOT_DIR)
+
+# Works
+# 
+# zip_paths = "/download/output/downloads/full/"
+# zip_output = "/process/output/src/"
+# unzip_source(zip_paths, zip_output)
+
+source_path = "/process/output/test-src/"
+output_path = "/process/output/app/"
+print("Copying Source.")
+copy_to_location(source_path, output_path)
+
+print("Preparing Soup.")
+prepare_soup(output_path)
+
+template_source_path = "/templates/"
+template_output_path = "/process/output/app/"
+print("Copying Template.")
+copy_to_location(template_source_path, template_output_path)
+
+print("Cleaning Up.")
+clean_up(output_path)
+
+final_path = "/app/pod/"
+print("Moving To Final Location.")
+move_to_location(output_path, final_path)
