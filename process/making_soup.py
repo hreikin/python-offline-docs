@@ -112,9 +112,9 @@ def create_soup(source_file):
     # Use pypandoc to insert the partials into a template file.
     head_partial = str(source_file).replace("-ORIGINAL.html", "-HEAD-PARTIAL.html")
     body_partial = str(source_file).replace("-ORIGINAL.html", "-BODY-PARTIAL.html")
-    template_file = os.path.realpath("templates/index.html")
-    template_css = os.path.realpath("templates/styles.css")
     finished_file = str(source_file).replace("-ORIGINAL.html", ".html")
+    template_file = os.path.realpath("templates/index.html")
+    template_css = os.path.relpath("../app/pod/styles.css", start=finished_file).lstrip("..").lstrip("/") # os.path.realpath("templates/styles.css")
     pandoc_args = [
         "-s",
         f"--css={template_css}",
@@ -145,7 +145,7 @@ def move_to_location(source_path, output_path):
 # unzip_source(zip_paths, zip_output)
 
 source_path = "output/test-src/"
-output_path = "output/app/"
+output_path = "../app/pod/"
 print("Copying Source.")
 copy_to_location(source_path, output_path)
 
@@ -153,13 +153,13 @@ print("Preparing Soup.")
 prepare_soup(output_path)
 
 template_source_path = "templates/"
-template_output_path = "output/app/"
+template_output_path = "../app/pod/"
 print("Copying Template.")
 copy_to_location(template_source_path, template_output_path)
 
 print("Cleaning Up.")
 clean_up(output_path)
 
-final_path = "../app/pod/"
-print("Moving To Final Location.")
-move_to_location(output_path, final_path)
+# final_path = "../app/pod/"
+# print("Moving To Final Location.")
+# move_to_location(output_path, final_path)
