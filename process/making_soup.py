@@ -17,7 +17,7 @@ def copy_to_location(source_path, destination_path, override=False):
     Recursive copies files from source  to destination directory.
     :param source_path: source directory
     :param destination_path: destination directory
-    :param override if True all files will be overritten, otherwise if false skip file
+    :param override if True all files will be overwritten, otherwise if false skip file
     :return: count of copied files
     """
     source_path = os.path.realpath(source_path)
@@ -104,7 +104,7 @@ def create_soup(source_file):
     for file_extension, soup in partial_pages:
         # Constructs partial output file names.
         output_file = str(source_file).replace("-ORIGINAL.html", f"{file_extension}")
-        print(f'Creating Merged HTML File: {output_file}')
+        print(f'Creating Partial HTML File: {output_file}')
         with open(output_file, "w") as stream:
             for item in soup:
                 stream.write(item)
@@ -113,15 +113,19 @@ def create_soup(source_file):
     head_partial = str(source_file).replace("-ORIGINAL.html", "-HEAD-PARTIAL.html")
     body_partial = str(source_file).replace("-ORIGINAL.html", "-BODY-PARTIAL.html")
     finished_file = str(source_file).replace("-ORIGINAL.html", ".html")
-    template_file = os.path.realpath("templates/index.html")
-    template_css = os.path.relpath("../app/pod/styles.css", start=finished_file).lstrip("..").lstrip("/") # os.path.realpath("templates/styles.css")
+    pandoc_html_template = os.path.realpath("templates/index.html")
+    pandoc_css_rel_link = os.path.relpath("../app/pod/styles.css", start=finished_file).lstrip("..").lstrip("/") # os.path.realpath("templates/styles.css")
+    pandoc_images_rel_link = os.path.relpath("../app/pod/images/", start=finished_file).lstrip("..").lstrip("/")
     pandoc_args = [
         "-s",
-        f"--css={template_css}",
+        f"--css={pandoc_css_rel_link}",
+        f"-V rel-images={pandoc_images_rel_link}",
         f"--include-in-header={head_partial}",
         f"--include-before-body={body_partial}",
-        f"--template={template_file}",
+        f"--template={pandoc_html_template}",
     ]
+    print(f"Creating Final HTML File With Pandoc: {finished_file}")
+    print(pandoc_images_rel_link)
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
 def clean_up(source_path):
