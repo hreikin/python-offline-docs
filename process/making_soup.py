@@ -54,7 +54,7 @@ def create_soup(source_file):
     """Opens the source_file and targets HTML elements to create separate 
     variables for each item which are used to create the final merged file."""
     source_file = os.path.realpath(source_file)
-    print(f'Opening HTML File: {source_file}')
+    print(f'Opening Source HTML File: {source_file}')
     with open(source_file) as handle:
         soup = BeautifulSoup(handle, "html.parser")
     
@@ -119,13 +119,12 @@ def create_soup(source_file):
     pandoc_args = [
         "-s",
         f"--css={pandoc_css_rel_link}",
-        f"-V rel-images={pandoc_images_rel_link}",
+        f"--variable=rel-images:{pandoc_images_rel_link}",
         f"--include-in-header={head_partial}",
         f"--include-before-body={body_partial}",
         f"--template={pandoc_html_template}",
     ]
     print(f"Creating Final HTML File With Pandoc: {finished_file}")
-    print(pandoc_images_rel_link)
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
 def clean_up(source_path):
