@@ -3,7 +3,12 @@ import pypandoc
 from bs4 import BeautifulSoup
 
 def unzip_source(source_path, output_path):
-    """Unzips all source files into the output path."""
+    """
+    Unzips all source_path zip files into the output path.
+    
+    :param source_path: Path to the folder containing zip files.
+    :param output_path: Path to unzip the files and folders into.
+    """
     source_path = os.path.realpath(source_path)
     output_path = os.path.realpath(output_path)
     os.chdir(source_path)
@@ -14,10 +19,11 @@ def unzip_source(source_path, output_path):
 
 def copy_to_location(source_path, destination_path, override=False):
     """
-    Recursive copies files from source  to destination directory.
+    Recursively copies files from source to destination directory.
+    
     :param source_path: source directory
     :param destination_path: destination directory
-    :param override if True all files will be overwritten, otherwise if false skip file
+    :param override: if True all files will be overwritten, otherwise if false skip file.
     :return: count of copied files
     """
     source_path = os.path.realpath(source_path)
@@ -38,9 +44,13 @@ def copy_to_location(source_path, destination_path, override=False):
     return files_count
 
 def prepare_soup(source_path):
-    """Walks through the source path and finds all HTML files, creates a merged 
-    file name for each one found before calling create_soup() to open/create the 
-    files."""
+    """
+    Walks through the source path to find and rename all HTML files 
+    before calling create_soup() on the individual files to create the 
+    HTML partials and convert with pandoc.
+    
+    :param source_path: Root directory to start searching for HTML files.
+    """
     source_path = os.path.realpath(source_path)
     for root, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
@@ -51,8 +61,14 @@ def prepare_soup(source_path):
                 create_soup(copied_file)
 
 def create_soup(source_file):
-    """Opens the source_file and targets HTML elements to create separate 
-    variables for each item which are used to create the final merged file."""
+    """
+    Opens the source_file and targets HTML elements to create separate 
+    variables for constructing the HTML partials. Once the partials are 
+    created they are used with pypandoc templates to create a final file.
+    
+    :param source_file: The file to create partials from.
+    :return finished_file: The final converted file.
+    """
     source_file = os.path.realpath(source_file)
     print(f'Opening Source HTML File: {source_file}')
     with open(source_file) as handle:
@@ -128,6 +144,12 @@ def create_soup(source_file):
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
 def clean_up(source_path):
+	"""
+	Walks through the source path and removes the partial and original 
+	files after conversion.
+	
+	:param source_path: The location of the files to search through.
+	"""
     source_path = os.path.realpath(source_path)
     remove = ["-PARTIAL.html", "-ORIGINAL.html"]
     for root, dirnames, filenames in os.walk(source_path):
@@ -138,6 +160,12 @@ def clean_up(source_path):
                     os.remove(f"{root}/{filename}")
 
 def move_to_location(source_path, output_path):
+	"""
+	Moves all files and folders from one location to another.
+	
+	:param source_path: Location of the files and folders to be moved.
+	:param output_path: Location to be moved to.
+	"""
     for file in os.listdir(source_path):
         shutil.move(source_path + file, output_path + file)
 
