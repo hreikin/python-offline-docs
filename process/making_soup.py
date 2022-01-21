@@ -4,10 +4,10 @@ from bs4 import BeautifulSoup
 
 def unzip_source(source_path, output_path):
     """
-    Unzips all source_path zip files into the output path.
+    Un-zips all source path zip files into the output path.
     
     :param source_path(str): Path to the folder containing zip files.
-    :param output_path(str): Path to unzip the files and folders into.
+    :param output_path(str): Path to un-zip the files and folders into.
     """
     source_path = os.path.realpath(source_path)
     output_path = os.path.realpath(output_path)
