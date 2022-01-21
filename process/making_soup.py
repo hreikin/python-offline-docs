@@ -144,12 +144,12 @@ def create_soup(source_file):
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
 def clean_up(source_path):
-	"""
-	Walks through the source path and removes the partial and original 
-	files after conversion.
-	
-	:param source_path: The location of the files to search through.
-	"""
+    """
+    Walks through the source path and removes the partial and original 
+    files after conversion.
+    
+    :param source_path: The location of the files to search through.
+    """
     source_path = os.path.realpath(source_path)
     remove = ["-PARTIAL.html", "-ORIGINAL.html"]
     for root, dirnames, filenames in os.walk(source_path):
@@ -160,12 +160,12 @@ def clean_up(source_path):
                     os.remove(f"{root}/{filename}")
 
 def move_to_location(source_path, output_path):
-	"""
-	Moves all files and folders from one location to another.
-	
-	:param source_path: Location of the files and folders to be moved.
-	:param output_path: Location to be moved to.
-	"""
+    """
+    Moves all files and folders from one location to another.
+    
+    :param source_path: Location of the files and folders to be moved.
+    :param output_path: Location to be moved to.
+    """
     for file in os.listdir(source_path):
         shutil.move(source_path + file, output_path + file)
 
