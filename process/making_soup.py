@@ -175,8 +175,8 @@ def move_to_location(source_path, output_path):
 # zip_output = "output/src/"
 # unzip_source(zip_paths, zip_output)
 
-source_path = "output/test-src/"
-output_path = "../app/pod/"
+source_path = "output/src/"
+output_path = "../app/"
 print("Copying Source.")
 copy_to_location(source_path, output_path)
 
@@ -184,7 +184,7 @@ print("Preparing Soup.")
 prepare_soup(output_path)
 
 template_source_path = "templates/"
-template_output_path = "../app/pod/"
+template_output_path = "../app/"
 print("Copying Template.")
 copy_to_location(template_source_path, template_output_path)
 
