@@ -79,7 +79,7 @@ def prepare_soup(source_path):
             if filename.endswith('.html'):
                 original_file = os.path.join(root, filename)
                 copied_file = root + "/" + filename.replace(".html", "-ORIGINAL.html")
-                logging.info(f"Renamed '{original _file}' to '{copied_file}'.")
+                logging.info(f"Renamed '{original_file}' to '{copied_file}'.")
                 shutil.move(original_file, copied_file)
                 create_soup(copied_file)
 
