@@ -14,8 +14,8 @@ Define the variables `allowed_domains` and `start_urls` within the file
 elsewhere.
 
 Run the spider with the following command to start the scraper and send 
-the found items to the scrapy pipeline. The `-O` flag outputs to file a 
-jsonlines file containing information of what was found by the scraper.
+the found items to the scrapy pipeline. The `-O` flag outputs to a 
+jsonlines file information about what was found by the scraper.
 
 ```
 scrapy crawl get_urls -O output.jl
