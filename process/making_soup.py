@@ -1,6 +1,28 @@
-import zipfile, glob, os, shutil
+import zipfile, glob, os, shutil, logging
 import pypandoc
 from bs4 import BeautifulSoup
+
+###################################### LOGS #####################################
+# Initialize the logger and specify the level of logging. This will log "DEBUG" 
+# and higher messages to file and log "INFO" and higher messages to the console.
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%d-%m-%y %H:%M:%S',
+                    filename='making-soup-debug.log',
+                    filemode='w')
+
+# Define a "handler" which writes "DEBUG" messages or higher to the "sys.stderr".
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+
+# Set a format which is simpler for console messages.
+formatter = logging.Formatter('%(levelname)s: %(message)s')
+
+# Tell the console "handler" to use this format.
+console.setFormatter(formatter)
+
+# Add the "handler" to the "root logger".
+logging.getLogger('').addHandler(console)
 
 def unzip_source(source_path, output_path):
     """
@@ -57,6 +79,7 @@ def prepare_soup(source_path):
             if filename.endswith('.html'):
                 original_file = os.path.join(root, filename)
                 copied_file = root + "/" + filename.replace(".html", "-ORIGINAL.html")
+                logging.info(f"Renamed '{original _file}' to '{copied_file}'.")
                 shutil.move(original_file, copied_file)
                 create_soup(copied_file)
 
@@ -70,7 +93,7 @@ def create_soup(source_file):
     :return finished_file(str): The final converted file.
     """
     source_file = os.path.realpath(source_file)
-    print(f'Opening Source HTML File: {source_file}')
+    logging.info(f'Opening Source HTML File: {source_file}')
     with open(source_file) as handle:
         soup = BeautifulSoup(handle, "html.parser")
     
@@ -120,7 +143,7 @@ def create_soup(source_file):
     for file_extension, soup in partial_pages:
         # Constructs partial output file names.
         output_file = str(source_file).replace("-ORIGINAL.html", f"{file_extension}")
-        print(f'Creating Partial HTML File: {output_file}')
+        logging.info(f'Creating Partial HTML File: {output_file}')
         with open(output_file, "w") as stream:
             for item in soup:
                 stream.write(item)
@@ -140,7 +163,7 @@ def create_soup(source_file):
         f"--include-before-body={body_partial}",
         f"--template={pandoc_html_template}",
     ]
-    print(f"Creating Final HTML File With Pandoc: {finished_file}")
+    logging.info(f"Creating Final HTML File With Pandoc: {finished_file}")
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
 def clean_up(source_path):
@@ -156,7 +179,7 @@ def clean_up(source_path):
         for filename in filenames:
             for item in remove:
                 if filename.endswith(item):
-                    print(f"Removing: {root}/{filename}")
+                    logging.info(f"Removing: {root}/{filename}")
                     os.remove(f"{root}/{filename}")
 
 def move_to_location(source_path, output_path):
