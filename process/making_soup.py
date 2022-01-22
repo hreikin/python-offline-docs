@@ -2,21 +2,21 @@ import zipfile, glob, os, shutil, logging
 import pypandoc
 from bs4 import BeautifulSoup
 
-###################################### LOGS #####################################
+##################################### LOGS #####################################
 # Initialize the logger and specify the level of logging. This will log "DEBUG" 
 # and higher messages to file and log "INFO" and higher messages to the console.
 logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    format='%(asctime)s %(name)s %(levelname)s %(message)s',
                     datefmt='%d-%m-%y %H:%M:%S',
                     filename='making-soup-debug.log',
                     filemode='w')
 
-# Define a "handler" which writes "DEBUG" messages or higher to the "sys.stderr".
+# Define a "handler" which writes "INFO" messages or higher to the "sys.stderr".
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 
 # Set a format which is simpler for console messages.
-formatter = logging.Formatter('%(levelname)s: %(message)s')
+formatter = logging.Formatter('%(message)s')
 
 # Tell the console "handler" to use this format.
 console.setFormatter(formatter)
@@ -79,7 +79,7 @@ def prepare_soup(source_path):
             if filename.endswith('.html'):
                 original_file = os.path.join(root, filename)
                 copied_file = root + "/" + filename.replace(".html", "-ORIGINAL.html")
-                logging.info(f"Renamed '{original_file}' to '{copied_file}'.")
+                logging.info(f"Renaming found file to: {copied_file}")
                 shutil.move(original_file, copied_file)
                 create_soup(copied_file)
 
@@ -200,16 +200,16 @@ def move_to_location(source_path, output_path):
 
 source_path = "output/src/"
 output_path = "../app/"
-print("Copying Source.")
+logging.info("Copying Source.")
 copy_to_location(source_path, output_path)
 
-print("Preparing Soup.")
+logging.info("Preparing Soup.")
 prepare_soup(output_path)
 
 template_source_path = "templates/"
 template_output_path = "../app/"
-print("Copying Template.")
+logging.info("Copying Template.")
 copy_to_location(template_source_path, template_output_path)
 
-print("Cleaning Up.")
+logging.info("Cleaning Up.")
 clean_up(output_path)
