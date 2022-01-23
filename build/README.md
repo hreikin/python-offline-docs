@@ -1,5 +1,5 @@
 # Scrapy Crawler
-The crawler within the `download` folder scrapes the defined pages for 
+The crawler within the `file_download` folder scrapes the defined pages for 
 links containing zip files. It then passes a list of the found items to 
 the scrapy item pipeline for download.
 
@@ -18,5 +18,21 @@ the found items to the scrapy pipeline. The `-O` flag outputs to a
 jsonlines file information about what was found by the scraper.
 
 ```
-scrapy crawl get_urls -O output.jl
+scrapy crawl get_files -O output.jl
+```
+
+# File Processing & Conversion
+The scripts within this folder unzip the files from the crawler 
+before processing and extracting parts of the HTML using beautiful soup. 
+The extracted HTML is used to create partials which are used with 
+pandocs templating system to create the pages with pypandoc.
+
+### How To Run
+While in development, run the file directly to process the downloaded 
+files into partials for use with pandocs templating system. Define the 
+variables at the bottom of the page if you wish to change any of them 
+and then run.
+
+```
+python3 making_soup.py
 ```

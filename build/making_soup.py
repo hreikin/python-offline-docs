@@ -148,7 +148,7 @@ def create_soup(source_file):
     body_partial = str(source_file).replace("-ORIGINAL.html", "-BODY-PARTIAL.html")
     finished_file = str(source_file).replace("-ORIGINAL.html", ".html")
     pandoc_html_template = os.path.realpath("templates/index.html")
-    pandoc_rel_link = os.path.relpath("../app/", start=finished_file).lstrip("..").lstrip("/")
+    pandoc_rel_link = os.path.relpath("../dist/", start=finished_file).lstrip("..").lstrip("/")
     pandoc_args = [
         "-s",
         f"--variable=page-title:{head_title_soup}",
@@ -187,12 +187,12 @@ def move_to_location(source_path, output_path):
 
 
 
-# zip_paths = "../download/output/downloads/full/"
-# zip_output = "output/src/"
+# zip_paths = "../src/full/"
+# zip_output = "../src/convert/"
 # unzip_source(zip_paths, zip_output)
 
-source_path = "output/src/"
-output_path = "../app/"
+source_path = "../src/convert/"
+output_path = "../dist/"
 logging.info("Copying Source.")
 copy_to_location(source_path, output_path)
 
@@ -200,7 +200,7 @@ logging.info("Preparing Soup.")
 prepare_soup(output_path)
 
 template_source_path = "templates/"
-template_output_path = "../app/"
+template_output_path = "../dist/"
 logging.info("Copying Template.")
 copy_to_location(template_source_path, template_output_path)
 
