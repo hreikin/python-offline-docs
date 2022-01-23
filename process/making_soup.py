@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)s %(levelname)s %(message)s',
                     datefmt='%d-%m-%y %H:%M:%S',
-                    filename='making-soup-debug.log',
+                    filename='debug.log',
                     filemode='w')
 
 # Define a "handler" which writes "INFO" messages or higher to the "sys.stderr".
@@ -100,18 +100,13 @@ def create_soup(source_file):
     # Variables to be used for constructing page partials.
     head_soup = soup.find("head")
     head_title_soup = head_soup.title
-    head_script_soup = head_soup.find_all("script")
-    head_link_soup = head_soup.find_all("link")
-    head_style_soup = head_soup.find_all("style")
     body_soup = soup.find("div", class_="body", role="main")
     sidebar_soup = soup.find("div", class_="sphinxsidebarwrapper")
     sidebar_link_soup = sidebar_soup.find_all("a", href=True)
     sidebar_link_pairs = []
     sidebar_bottom = ['</nav>\n', '</div>\n', '<main class="mdl-layout__content mdl-color--grey-100">\n', '<div class="mdl-grid demo-content">\n']
     finished_body_soup = []
-    finished_head_soup = []
-    partial_pages = [
-        ("-HEAD-PARTIAL.html", finished_head_soup),  
+    partial_pages = [ 
         ("-BODY-PARTIAL.html", finished_body_soup),
         ]
 
@@ -129,37 +124,24 @@ def create_soup(source_file):
         finished_body_soup.append(item)
     finished_body_soup.append(str(body_soup))
 
-    # Construct the head partial file. This gets inserted with the pandoc 
-    # "--include-in-header" option.
-    finished_head_soup.append(str(head_title_soup) + "\n")
-    for item in head_script_soup:
-        finished_head_soup.append(str(item) + "\n")
-    for item in head_link_soup:
-        finished_head_soup.append(str(item) + "\n")
-    for item in head_style_soup:
-        finished_head_soup.append(str(item) + "\n")
-
     # Creates the partials from the finished soup.
     for file_extension, soup in partial_pages:
-        # Constructs partial output file names.
+        # Constructs partial output file name.
         output_file = str(source_file).replace("-ORIGINAL.html", f"{file_extension}")
         logging.info(f'Creating Partial HTML File: {output_file}')
         with open(output_file, "w") as stream:
             for item in soup:
                 stream.write(item)
 
-    # Use pypandoc to insert the partials into a template file.
-    head_partial = str(source_file).replace("-ORIGINAL.html", "-HEAD-PARTIAL.html")
+    # Use pypandoc to insert the partial and variabless into a template file.
     body_partial = str(source_file).replace("-ORIGINAL.html", "-BODY-PARTIAL.html")
     finished_file = str(source_file).replace("-ORIGINAL.html", ".html")
     pandoc_html_template = os.path.realpath("templates/index.html")
-    pandoc_css_rel_link = os.path.relpath("../app/pod/styles.css", start=finished_file).lstrip("..").lstrip("/") # os.path.realpath("templates/styles.css")
-    pandoc_images_rel_link = os.path.relpath("../app/pod/images/", start=finished_file).lstrip("..").lstrip("/")
+    pandoc_rel_link = os.path.relpath("../app/", start=finished_file).lstrip("..").lstrip("/")
     pandoc_args = [
         "-s",
-        f"--css={pandoc_css_rel_link}",
-        f"--variable=rel-images:{pandoc_images_rel_link}",
-        f"--include-in-header={head_partial}",
+        f"--variable=page-title:{head_title_soup}",
+        f"--variable=rel-link:{pandoc_rel_link}",
         f"--include-before-body={body_partial}",
         f"--template={pandoc_html_template}",
     ]
