@@ -139,10 +139,6 @@ cython_debug/
 *.data
 
 # local folders
-src-backup/
-converted/
-test-converted/
-test-src/
+src/full/
+src/convert/
 .vscode
-single-src/
-single-converted/
