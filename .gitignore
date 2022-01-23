@@ -143,3 +143,4 @@ src/full/
 src/convert/
 .vscode
 output.jl
+src-backup/
