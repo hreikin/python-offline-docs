@@ -187,22 +187,22 @@ def move_to_location(source_path, output_path):
 
 
 
-# zip_paths = "../download/output/downloads/full/"
-# zip_output = "output/src/"
-# unzip_source(zip_paths, zip_output)
+zip_paths = "../src/full/"
+zip_output = "../src/convert/"
+unzip_source(zip_paths, zip_output)
 
-source_path = "output/src/"
-output_path = "../app/"
-logging.info("Copying Source.")
-copy_to_location(source_path, output_path)
+# source_path = "output/src/"
+# output_path = "../app/"
+# logging.info("Copying Source.")
+# copy_to_location(source_path, output_path)
 
-logging.info("Preparing Soup.")
-prepare_soup(output_path)
+# logging.info("Preparing Soup.")
+# prepare_soup(output_path)
 
-template_source_path = "templates/"
-template_output_path = "../app/"
-logging.info("Copying Template.")
-copy_to_location(template_source_path, template_output_path)
+# template_source_path = "templates/"
+# template_output_path = "../app/"
+# logging.info("Copying Template.")
+# copy_to_location(template_source_path, template_output_path)
 
-logging.info("Cleaning Up.")
-clean_up(output_path)
+# logging.info("Cleaning Up.")
+# clean_up(output_path)

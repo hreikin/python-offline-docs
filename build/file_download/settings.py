@@ -67,7 +67,7 @@ ROBOTSTXT_OBEY = False
 #}
 
 ITEM_PIPELINES = {'scrapy.pipelines.files.FilesPipeline': 1}
-FILES_STORE = 'output/downloads'
+FILES_STORE = '../src/'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
