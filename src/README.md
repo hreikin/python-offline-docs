@@ -1,0 +1,1 @@
+This folder is where all the zips get extracted to.
