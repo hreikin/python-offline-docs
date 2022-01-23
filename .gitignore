@@ -138,7 +138,8 @@ cython_debug/
 # Created files
 *.data
 
-# local folders
+# local folders and files from building/converting
 src/full/
 src/convert/
 .vscode
+output.jl
