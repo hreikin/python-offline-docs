@@ -5,12 +5,12 @@ the scrapy item pipeline for download.
 
 By default the crawler is set to scrape the 2 archive pages for the Python docs 
 and look for zip files. The downloaded files will be in 
-`download/output` directory.
+`src` directory.
 
 ### How To Run
 Define the variables `allowed_domains` and `start_urls` within the file 
-`download/file_download/spiders/get_files.py`. You can optionally change the value of 
-`FILES_STORE` in `download/file_download/settings.py` if you wish the files to be output 
+`build/file_download/spiders/get_files.py`. You can optionally change the value of 
+`FILES_STORE` in `build/file_download/settings.py` if you wish the files to be output 
 elsewhere.
 
 Run the spider with the following command to start the scraper and send 
