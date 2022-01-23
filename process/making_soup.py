@@ -97,21 +97,32 @@ def create_soup(source_file):
     with open(source_file) as handle:
         soup = BeautifulSoup(handle, "html.parser")
     
-    # Variables to be used for constructing page partials.
+    # Define variables to be used for constructing page partials.
+    # For Pandoc $page-title$ variable.
     head_soup = soup.find("head")
     head_title_soup = head_soup.title
-    body_soup = soup.find("div", class_="body", role="main")
+    # For "*-BODY-PARTIAL.html" that is used with Pandoc templates. These 
+    # combine the sidebar and body of the page.
     sidebar_soup = soup.find("div", class_="sphinxsidebarwrapper")
     sidebar_link_soup = sidebar_soup.find_all("a", href=True)
     sidebar_link_pairs = []
-    sidebar_bottom = ['</nav>\n', '</div>\n', '<main class="mdl-layout__content mdl-color--grey-100">\n', '<div class="mdl-grid demo-content">\n']
+    sidebar_bottom = [
+        '</nav>\n', 
+        '</div>\n', 
+        '<main class="mdl-layout__content mdl-color--grey-100">\n', 
+        '<div class="mdl-grid demo-content">\n'
+        ]
+    body_soup = soup.find("div", class_="body", role="main")
     finished_body_soup = []
+    # File extension for partial and soup to use when creating it. This is 
+    # currently a list of tuples as it previously used multiple partials, it can 
+    # probably just be a tuple if only using one partial.
     partial_pages = [ 
         ("-BODY-PARTIAL.html", finished_body_soup),
         ]
 
-    # Create a tuple of the href and link text found in the sidebar and then 
-    # append it to a list.
+    # Create a tuple of the href and link text for each item found in the 
+    # sidebar and then append it to a list.
     for item in sidebar_link_soup:
         item_tuple = (item['href'], item.contents[0])
         sidebar_link_pairs.append(item_tuple)
