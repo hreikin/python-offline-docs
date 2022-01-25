@@ -1,7 +1,7 @@
 # Python Offline Docs
-This project utilizes **scrapy, beautiful soup, pypandoc, pandoc** and **pywebview** to 
-create an offline Material Design themed version of the official Python 
-docs.
+This project utilizes **scrapy, beautiful soup, pypandoc, pandoc** and 
+**pywebview** to create an offline Material Design themed version of the official 
+Python docs.
 
 ## Current Status
 This app is currently a work in progress and in development. Work is 
@@ -22,9 +22,11 @@ The extracted HTML is used to create partials which are used with
 pandocs templating system to create the pages with pypandoc. Once the 
 processing is complete the copied originals and partials are removed 
 leaving the source HTML and converted versions separate.
+
 ### The `dist` Folder
 The scripts within the `dist` folder use pywebview to render the 
 converted version of the docs.
+
 ### The `src` Folder
 The `src` folder is where all the extracted files and processing work gets done.
 
