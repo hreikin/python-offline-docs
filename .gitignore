@@ -140,7 +140,8 @@ cython_debug/
 
 # local folders and files from building/converting
 src/full/
-src/convert/
+src/src/
+src/partial/
 .vscode
 output.jl
 src-backup/
