@@ -1,5 +1,11 @@
 # Project Requirements
 
+- `beautiful soup`
+- `pywebview`
+- `pandoc` (OS Install)
+- `pypandoc`
+- `scrapy`
+
 ```
 $ sudo dnf install pandoc
 
