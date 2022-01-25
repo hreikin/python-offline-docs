@@ -39,6 +39,32 @@ def unzip_source(source_path, output_path):
             with zipfile.ZipFile(file) as item:
                 item.extractall(output_path)
 
+def copy_source(source_path, destination_path, override=False):
+    """
+    Recursively copies files from source to destination directory.
+    
+    :param source_path(str): Source directory that contains files and folders to be copied.
+    :param destination_path(str): Destination directory to copy to.
+    :param override(bool): If True all files will be overwritten, otherwise if false skip file.
+    :return files_count(int): Count of copied files.
+    """
+    source_path = os.path.realpath(source_path)
+    destination_path = os.path.realpath(destination_path)
+    files_count = 0
+    if not os.path.exists(destination_path):
+        os.mkdir(destination_path)
+    items = glob.glob(source_path + '/*')
+    for item in items:
+        if os.path.isdir(item):
+            path = os.path.join(destination_path, item.split('/')[-1])
+            files_count += copy_source(source_path=item, destination_path=path, override=override)
+        elif item.endswith(".html") or item.endswith(".png"):
+            file = os.path.join(destination_path, item.split('/')[-1])
+            if not os.path.exists(file) or override:
+                shutil.copyfile(item, file)
+                files_count += 1
+    return files_count
+
 def copy_to_location(source_path, destination_path, override=False):
     """
     Recursively copies files from source to destination directory.
@@ -159,7 +185,7 @@ def create_soup(source_file):
     logging.info(f"Creating Final HTML File With Pandoc: {finished_file}")
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
-def clean_up(source_path):
+def clean_up_dist(source_path):
     """
     Walks through the source path and removes the partial and original 
     files after conversion.
@@ -175,6 +201,21 @@ def clean_up(source_path):
                     logging.info(f"Removing: {root}/{filename}")
                     os.remove(f"{root}/{filename}")
 
+def clean_up_src(source_path):
+    """
+    Walks through the source path and removes the partial and original 
+    files after conversion.
+    
+    :param source_path(str): The location of the files to search through.
+    """
+    source_path = os.path.realpath(source_path)
+    keep = "-PARTIAL.html"
+    for root, dirnames, filenames in os.walk(source_path):
+        for filename in filenames:
+            if not filename.endswith(keep):
+                logging.info(f"Removing: {root}/{filename}")
+                os.remove(f"{root}/{filename}")
+
 def move_to_location(source_path, output_path):
     """
     Moves all files and folders from one location to another.
@@ -188,21 +229,30 @@ def move_to_location(source_path, output_path):
 
 
 # zip_paths = "../src/full/"
-# zip_output = "../src/convert/"
+# zip_output = "../src/src/"
 # unzip_source(zip_paths, zip_output)
 
-source_path = "../src/convert/"
-output_path = "../dist/"
+source_path = "../src/src/"
+output_path = "../src/partial/"
 logging.info("Copying Source.")
-copy_to_location(source_path, output_path)
+copy_source(source_path, output_path)
 
 logging.info("Preparing Soup.")
 prepare_soup(output_path)
+
+source_path = "../src/partial/"
+output_path = "../dist/"
+logging.info("Copying Converted Files.")
+copy_to_location(source_path, output_path)
 
 template_source_path = "templates/"
 template_output_path = "../dist/"
 logging.info("Copying Template.")
 copy_to_location(template_source_path, template_output_path)
 
-logging.info("Cleaning Up.")
-clean_up(output_path)
+source_path = "../dist/"
+logging.info("Cleaning Up /dist.")
+clean_up_dist(source_path)
+source_path = "../src/partial/"
+logging.info("Cleaning Up /src/partial.")
+clean_up_src(source_path)
