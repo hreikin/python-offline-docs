@@ -45,7 +45,7 @@ def copy_to_location(source_path, destination_path, file_extensions=None, overwr
     
     :param source_path(str): Source directory that contains files and folders to be copied.
     :param destination_path(str): Destination directory to copy to.
-    :param file_extensions(list): Optional list of file extensions to copy.
+    :param file_extensions(list): Optional list of file extensions to copy, if none given all files and folders are copied.
     :param overwrite(bool): If True all files will be overwritten, otherwise if false skip file.
     :return files_count(int): Count of copied files.
     """
@@ -87,7 +87,7 @@ def prepare_soup(source_path):
             if filename.endswith('.html'):
                 original_file = os.path.join(root, filename)
                 copied_file = root + "/" + filename.replace(".html", "-ORIGINAL.html")
-                logging.info(f"Renaming found file to: {copied_file}")
+                logging.debug(f"Renaming Original Source File To: {copied_file}")
                 shutil.move(original_file, copied_file)
                 create_soup(copied_file)
 
@@ -101,7 +101,7 @@ def create_soup(source_file):
     :return finished_file(str): The final converted file.
     """
     source_file = os.path.realpath(source_file)
-    logging.info(f'Opening Source HTML File: {source_file}')
+    logging.debug(f'Opening Source HTML File: {source_file}')
     with open(source_file) as handle:
         soup = BeautifulSoup(handle, "html.parser")
     
@@ -147,7 +147,7 @@ def create_soup(source_file):
     for file_extension, soup in partial_pages:
         # Constructs partial output file name.
         output_file = str(source_file).replace("-ORIGINAL.html", f"{file_extension}")
-        logging.info(f'Creating Partial HTML File: {output_file}')
+        logging.debug(f'Creating Partial HTML File: {output_file}')
         with open(output_file, "w") as stream:
             for item in soup:
                 stream.write(item)
@@ -164,7 +164,7 @@ def create_soup(source_file):
         f"--include-before-body={body_partial}",
         f"--template={pandoc_html_template}",
     ]
-    logging.info(f"Creating Final HTML File With Pandoc: {finished_file}")
+    logging.debug(f"Creating Final HTML File With Pandoc: {finished_file}")
     pypandoc.convert_text("", "html", format="html", extra_args=pandoc_args, outputfile=finished_file)
 
 def clean_up_dist(source_path):
@@ -180,7 +180,7 @@ def clean_up_dist(source_path):
         for filename in filenames:
             for item in remove:
                 if filename.endswith(item):
-                    logging.info(f"Removing: {root}/{filename}")
+                    logging.debug(f"Removing: {root}/{filename}")
                     os.remove(f"{root}/{filename}")
 
 def clean_up_src(source_path):
@@ -195,19 +195,8 @@ def clean_up_src(source_path):
     for root, dirnames, filenames in os.walk(source_path):
         for filename in filenames:
             if not filename.endswith(keep):
-                logging.info(f"Removing: {root}/{filename}")
+                logging.debug(f"Removing: {root}/{filename}")
                 os.remove(f"{root}/{filename}")
-
-def move_to_location(source_path, output_path):
-    """
-    Moves all files and folders from one location to another.
-    
-    :param source_path(str): Location of the files and folders to be moved.
-    :param output_path(str): Location to be moved to.
-    """
-    for file in os.listdir(source_path):
-        shutil.move(source_path + file, output_path + file)
-
 
 
 # zip_paths = "../src/full/"
@@ -220,7 +209,7 @@ extensions = [".html", ".png"]
 logging.info("Copying Source.")
 copy_to_location(source_path, output_path, extensions)
 
-logging.info("Preparing Soup.")
+logging.info("Converting Source.")
 prepare_soup(output_path)
 
 source_path = "../src/partial/"
@@ -230,12 +219,12 @@ copy_to_location(source_path, output_path)
 
 template_source_path = "templates/"
 template_output_path = "../dist/"
-logging.info("Copying Template.")
+logging.info("Copying Template Files.")
 copy_to_location(template_source_path, template_output_path)
 
 source_path = "../dist/"
-logging.info("Cleaning Up /dist.")
+logging.info("Cleaning Up '/dist'.")
 clean_up_dist(source_path)
 source_path = "../src/partial/"
-logging.info("Cleaning Up /src/partial.")
+logging.info("Cleaning Up '/src/partial'.")
 clean_up_src(source_path)
