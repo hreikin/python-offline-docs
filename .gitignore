@@ -8,9 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -140,6 +138,10 @@ cython_debug/
 # Created files
 *.data
 
-# src folder
-src/
+# local folders and files from building/converting
+src/full/
+src/src/
+src/partial/
+.vscode
+output.jl
 src-backup/
